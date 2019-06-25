@@ -1,4 +1,4 @@
-package com.kmakrutin.chapter0100calendar.domain;
+package com.kmakrutin.calendar.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

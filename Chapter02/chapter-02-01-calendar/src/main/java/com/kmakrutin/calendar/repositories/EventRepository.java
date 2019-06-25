@@ -1,10 +1,10 @@
-package com.kmakrutin.chapter0100calendar.repositories;
+package com.kmakrutin.calendar.repositories;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.kmakrutin.chapter0100calendar.domain.Event;
+import com.kmakrutin.calendar.domain.Event;
 
 public interface EventRepository extends JpaRepository<Event, Integer>
 {

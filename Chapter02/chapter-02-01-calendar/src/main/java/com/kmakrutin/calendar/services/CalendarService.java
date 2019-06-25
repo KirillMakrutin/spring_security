@@ -1,9 +1,9 @@
-package com.kmakrutin.chapter0100calendar.services;
+package com.kmakrutin.calendar.services;
 
 import java.util.List;
 
-import com.kmakrutin.chapter0100calendar.domain.CalendarUser;
-import com.kmakrutin.chapter0100calendar.domain.Event;
+import com.kmakrutin.calendar.domain.CalendarUser;
+import com.kmakrutin.calendar.domain.Event;
 
 public interface CalendarService
 {

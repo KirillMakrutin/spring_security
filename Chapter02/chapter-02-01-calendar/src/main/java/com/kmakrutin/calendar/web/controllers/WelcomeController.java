@@ -1,4 +1,4 @@
-package com.kmakrutin.chapter0100calendar.web.controllers;
+package com.kmakrutin.calendar.web.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

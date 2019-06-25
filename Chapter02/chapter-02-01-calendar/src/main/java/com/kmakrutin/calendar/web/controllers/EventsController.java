@@ -1,4 +1,4 @@
-package com.kmakrutin.chapter0100calendar.web.controllers;
+package com.kmakrutin.calendar.web.controllers;
 
 import java.util.Date;
 
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.kmakrutin.chapter0100calendar.domain.CalendarUser;
-import com.kmakrutin.chapter0100calendar.domain.Event;
-import com.kmakrutin.chapter0100calendar.services.CalendarService;
-import com.kmakrutin.chapter0100calendar.services.UserContext;
-import com.kmakrutin.chapter0100calendar.web.dto.CreateEventForm;
+import com.kmakrutin.calendar.domain.CalendarUser;
+import com.kmakrutin.calendar.domain.Event;
+import com.kmakrutin.calendar.services.CalendarService;
+import com.kmakrutin.calendar.services.UserContext;
+import com.kmakrutin.calendar.web.dto.CreateEventForm;
 import lombok.RequiredArgsConstructor;
 
 @Controller

@@ -1,11 +1,11 @@
-package com.kmakrutin.chapter0100calendar.repositories;
+package com.kmakrutin.calendar.repositories;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.kmakrutin.chapter0100calendar.domain.CalendarUser;
+import com.kmakrutin.calendar.domain.CalendarUser;
 
 public interface CalendarUserRepository extends JpaRepository<CalendarUser, Integer>
 {

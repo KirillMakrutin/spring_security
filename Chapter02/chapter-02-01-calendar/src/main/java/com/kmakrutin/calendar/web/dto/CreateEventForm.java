@@ -1,4 +1,4 @@
-package com.kmakrutin.chapter0100calendar.web.dto;
+package com.kmakrutin.calendar.web.dto;
 
 import java.util.Date;
 

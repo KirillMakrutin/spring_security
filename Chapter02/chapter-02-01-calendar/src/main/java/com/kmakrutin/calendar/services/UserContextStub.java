@@ -1,9 +1,9 @@
-package com.kmakrutin.chapter0100calendar.services;
+package com.kmakrutin.calendar.services;
 
 import org.springframework.stereotype.Service;
 
-import com.kmakrutin.chapter0100calendar.domain.CalendarUser;
-import com.kmakrutin.chapter0100calendar.repositories.CalendarUserRepository;
+import com.kmakrutin.calendar.domain.CalendarUser;
+import com.kmakrutin.calendar.repositories.CalendarUserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service

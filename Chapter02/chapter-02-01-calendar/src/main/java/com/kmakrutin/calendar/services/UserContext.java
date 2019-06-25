@@ -1,6 +1,6 @@
-package com.kmakrutin.chapter0100calendar.services;
+package com.kmakrutin.calendar.services;
 
-import com.kmakrutin.chapter0100calendar.domain.CalendarUser;
+import com.kmakrutin.calendar.domain.CalendarUser;
 
 public interface UserContext
 {
