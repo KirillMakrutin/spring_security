@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="container">
+
+  <div th:fragment="header">
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+
+      <a class="navbar-brand" th:href="@{/}">myCalendar</a>
+
+      <ul class="nav navbar-nav">
+        <li class="nav-item active"><a class="nav-link" id="navWelcomeLink" th:href="@{/}">Welcome</a></li>
+        <li class="nav-item"><a class="nav-link" id="navEventsLink" th:href="@{/events/}">All Events</a></li>
+        <li class="nav-item"><a class="nav-link" id="navMyEventsLink" th:href="@{/events/my}">My Events</a></li>
+        <li class="nav-item"><a class="nav-link" id="navCreateEventLink" th:href="@{/events/form}">Create Event</a></li>
+        <li class="nav-item"><a class="nav-link" id="navH2Link" target="_blank" th:href="@{/admin/h2}">H2</a></li>
+      </ul>
+    </nav>
+
+    <br/>
+
+    <!-- Standard messages -->
+    <div th:if="${#vars['message'] != null}" class="alert alert-success">
+      <span th:text="${#vars['message']}"></span>
+    </div>
+    <div th:if="${#vars['error'] != null}" class="alert alert-danger">
+      <span th:text="${#vars['error']}"></span>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
