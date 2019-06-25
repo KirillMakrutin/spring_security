@@ -37,10 +37,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   {
     http.authorizeRequests()
         .antMatchers( "/**" ).access( "hasRole('USER')" )
-        // equivalent to <http auto-config="true">
+
         .and().formLogin()
+        .loginPage( "/login/form" )
+        .loginProcessingUrl( "/login" )
+        .failureUrl( "/login/form?error" )
+        .usernameParameter( "username" )
+        .passwordParameter( "password" )
+
         .and().httpBasic()
         .and().logout()
+        .logoutUrl( "/logout" )
+        .logoutSuccessUrl( "/logout?logout" )
         // CSRF is enabled by default (will discuss later)
         .and().csrf().disable();
   }
