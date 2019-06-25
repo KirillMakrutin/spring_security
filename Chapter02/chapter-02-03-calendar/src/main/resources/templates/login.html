@@ -8,8 +8,9 @@
 </head>
 <body>
 
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
 <div class="container">
-  <!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
 
   <form th:action="@{/login}" method="POST" cssClass="form-horizontal">
 
@@ -24,12 +25,16 @@
       You have been logged out.
     </div>
 
-    <label for="username">Username</label>
-    <input type="text" id="username" name="username" autofocus="autofocus"/>
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password"/>
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" autofocus="autofocus" class="form-control"/>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" class="form-control"/>
+    </div>
+
+
     <div class="form-actions">
-      <input id="submit" class="btn" name="submit" type="submit" value="Login"/>
+      <input id="submit" class="btn btn-primary" name="submit" type="submit" value="Login"/>
     </div>
   </form>
 

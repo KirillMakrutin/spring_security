@@ -26,7 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         // In Spring Security 5, the default is DelegatingPasswordEncoder, which required Password Storage Format
         // Add password storage format, for plain text, add {noop}
         .password( "{noop}user1" )
-        .roles( "USER" );
+        .roles( "USER" )
+
+        .and()
+
+        .withUser( "admin1@example.com" )
+        .password( "{noop}admin1" )
+        .roles( "USER", "ADMIN" );
 
   }
 
@@ -36,6 +42,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   protected void configure( HttpSecurity http ) throws Exception
   {
     http.authorizeRequests()
+        .antMatchers( "/css/**", "/webjars/**", "/favicon-*.jpg" ).permitAll()
+
+        .antMatchers( "/" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
+        .antMatchers( "/login/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
+        .antMatchers( "/logout/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
+        .antMatchers( "/admin/**" ).access( "hasRole('ADMIN' )" )
+        .antMatchers( "/events" ).access( "hasRole('ADMIN' )" )
+
         .antMatchers( "/**" ).access( "hasRole('USER')" )
 
         .and().formLogin()
@@ -46,9 +60,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .passwordParameter( "password" )
 
         .and().httpBasic()
-        .and().logout()
+        .and()
+        .logout()
         .logoutUrl( "/logout" )
-        .logoutSuccessUrl( "/logout?logout" )
+        .logoutSuccessUrl( "/login/form?logout" )
         // CSRF is enabled by default (will discuss later)
         .and().csrf().disable();
   }
