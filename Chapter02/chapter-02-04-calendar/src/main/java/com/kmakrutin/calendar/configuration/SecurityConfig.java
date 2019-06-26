@@ -47,8 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .antMatchers( "/" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
         .antMatchers( "/login/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
         .antMatchers( "/logout/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
-        .antMatchers( "/admin/**" ).access( "hasRole('ADMIN' )" )
-        .antMatchers( "/events" ).access( "hasRole('ADMIN' )" )
+        .antMatchers( "/admin/*" ).access( "hasRole('ADMIN' )" )
+        .antMatchers( "/events/" ).access( "hasRole('ADMIN' )" )
 
         .antMatchers( "/**" ).access( "hasRole('USER')" )
 
