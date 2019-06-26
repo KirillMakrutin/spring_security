@@ -58,6 +58,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .failureUrl( "/login/form?error" )
         .usernameParameter( "username" )
         .passwordParameter( "password" )
+        // without second parameter /default only if user didn't follow to any other protected resource before authentication
+        .defaultSuccessUrl( "/default" )
+        .permitAll()
 
         .and().httpBasic()
         .and()
