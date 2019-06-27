@@ -21,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   protected void configure( AuthenticationManagerBuilder auth ) throws Exception
   {
     auth.inMemoryAuthentication()
-        .withUser( "user1@exmaple.com" )
+        .withUser( "user1@example.com" )
         // Prior to Spring Security 5.0 the default PasswordEncoder was NoOpPasswordEncoder which required plain text passwords.
         // In Spring Security 5, the default is DelegatingPasswordEncoder, which required Password Storage Format
         // Add password storage format, for plain text, add {noop}
