@@ -1,10 +1,15 @@
 package com.kmakrutin.calendar.configuration;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
@@ -14,10 +19,37 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
+  @SuppressWarnings( "deprecation" )
+  @Bean
+  public static PasswordEncoder passwordEncoder()
+  {
+    return NoOpPasswordEncoder.getInstance();
+  }
+
+  // Here we exposed InMemoryUserDetailsManager (UserDetailsService) to access the bean
+  @Bean
+  public UserDetailsManager userDetailsService()
+  {
+    InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
+
+    userDetailsManager.createUser(
+        User.withUsername( "user1@example.com" )
+            .password( "user1" )
+            .roles( "USER" )
+            .build() );
+
+    userDetailsManager.createUser(
+        User.withUsername( "admin1@example.com" )
+            .password( "admin1" )
+            .roles( "USER", "ADMIN" )
+            .build() );
+
+    return userDetailsManager;
+  }
 
   // AuthenticationManagerBuilder object is how Spring Security authenticates the user. In this instance, we utilize an
   // in-memory data store to compare a username and password
-  @Override
+/*  @Override
   protected void configure( AuthenticationManagerBuilder auth ) throws Exception
   {
     auth.inMemoryAuthentication()
@@ -34,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .password( "{noop}admin1" )
         .roles( "USER", "ADMIN" );
 
-  }
+  }*/
 
   // HttpSecurity object creates a Servlet Filter, which ensures that the currently logged-in user is associated with
   // the appropriate role.
@@ -47,8 +79,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .antMatchers( "/" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
         .antMatchers( "/login/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
         .antMatchers( "/logout/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
-        .antMatchers( "/admin/*" ).access( "hasRole('ADMIN' )" )
+        .antMatchers( "/admin/**" ).access( "hasRole('ADMIN' )" )
         .antMatchers( "/events/" ).access( "hasRole('ADMIN' )" )
+
+        .antMatchers( "/signup/*" ).permitAll()
 
         .antMatchers( "/**" ).access( "hasRole('USER')" )
 
@@ -68,6 +102,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .logoutUrl( "/logout" )
         .logoutSuccessUrl( "/login/form?logout" )
         // CSRF is enabled by default (will discuss later)
-        .and().csrf().disable();
+        .and().csrf().disable()
+        // for h2
+        .headers().frameOptions().disable();
   }
 }

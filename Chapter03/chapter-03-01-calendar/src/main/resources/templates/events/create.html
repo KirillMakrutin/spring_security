@@ -15,7 +15,9 @@
 
   <!--/*--><!--@thymesVar id="createEventForm" type="com.kmakrutin.calendar.web.dto.CreateEventForm"--><!--*/-->
   <form action="#" th:action="@{/events/new}" th:object="${createEventForm}" method="post" cssClass="form-horizontal">
-    <errors path="*" element="div" cssClass="alert alert-error"/>
+
+    <div class="alert alert-danger" th:each="err : ${#fields.allErrors()}" th:text="${err}">Error message</div>
+
     <fieldset>
       <legend>Event Information</legend>
       <div class="control-group">

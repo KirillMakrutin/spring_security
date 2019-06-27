@@ -1,8 +1,11 @@
 package com.kmakrutin.calendar.services;
 
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Component;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
@@ -13,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class SpringSecurityUserContext implements UserContext
 {
   private final CalendarService calendarService;
+  private final UserDetailsManager userDetailsManager;
 
   @Override
   public CalendarUser getCurrentUser()
@@ -32,6 +36,9 @@ public class SpringSecurityUserContext implements UserContext
   @Override
   public void setCurrentUser( CalendarUser user )
   {
-    throw new UnsupportedOperationException();
+    UserDetails userDetails = userDetailsManager.loadUserByUsername( user.getEmail() );
+    Authentication authentication = new UsernamePasswordAuthenticationToken( userDetails,
+        userDetails.getPassword(), userDetails.getAuthorities() );
+    SecurityContextHolder.getContext().setAuthentication( authentication );
   }
 }

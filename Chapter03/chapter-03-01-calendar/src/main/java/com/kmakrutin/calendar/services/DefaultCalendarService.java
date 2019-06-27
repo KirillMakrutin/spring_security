@@ -2,6 +2,11 @@ package com.kmakrutin.calendar.services;
 
 import java.util.List;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
@@ -14,6 +19,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DefaultCalendarService implements CalendarService
 {
+  /**
+   * @see com.kmakrutin.calendar.configuration.SecurityConfig where we exposed {@link UserDetailsManager} to aware Spring
+   * Security Context of a new user
+   */
+  private final UserDetailsManager userDetailsManager;
   private final CalendarUserRepository calendarUserRepository;
   private final EventRepository eventRepository;
 
@@ -38,6 +48,11 @@ public class DefaultCalendarService implements CalendarService
   @Override
   public CalendarUser createUser( CalendarUser user )
   {
+    List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList( "ROLE_USER" );
+    UserDetails userDetails = new User( user.getEmail(), user.getPassword(), authorities );
+    // create a Spring Security user
+    userDetailsManager.createUser( userDetails );
+    // create a CalendarUser in DB
     return calendarUserRepository.save( user );
   }
 
