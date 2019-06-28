@@ -1,6 +1,8 @@
 package com.kmakrutin.calendar.services;
 
-import org.springframework.security.core.userdetails.User;
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,6 +33,54 @@ public class CalendarUserDetailsService implements UserDetailsService
       return null;
     }
 
-    return new User( calendarUser.getEmail(), calendarUser.getPassword(), CalendarUserAuthorityUtils.createAuthorities( calendarUser ) );
+    return new CalendarUserDetails( calendarUser );
+  }
+
+  private final class CalendarUserDetails extends CalendarUser implements UserDetails
+  {
+    private CalendarUserDetails( CalendarUser user )
+    {
+      setId( user.getId() );
+      setEmail( user.getEmail() );
+      setFirstName( user.getFirstName() );
+      setLastName( user.getLastName() );
+      setPassword( user.getPassword() );
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities()
+    {
+      return CalendarUserAuthorityUtils.createAuthorities( this );
+    }
+
+    @Override
+    public String getUsername()
+    {
+      return getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+      return true;
+    }
   }
 }
