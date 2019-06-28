@@ -10,6 +10,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.kmakrutin.calendar.authentication.DomainUsernamePasswordAuthenticationFilter;
 
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
@@ -87,24 +93,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .antMatchers( "/css/**", "/webjars/**", "/favicon-*.jpg" ).permitAll()
 
         .antMatchers( "/" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
-        .antMatchers( "/login/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
-        .antMatchers( "/logout/*" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
+        .antMatchers( "/logout/*" ).access( "hasRole('USER')" )
         .antMatchers( "/admin/**" ).access( "hasRole('ADMIN' )" )
         .antMatchers( "/events/" ).access( "hasRole('ADMIN' )" )
 
+        .antMatchers( "/login/*" ).permitAll()
         .antMatchers( "/signup/*" ).permitAll()
 
         .antMatchers( "/**" ).access( "hasRole('USER')" )
 
-        .and().formLogin()
-        .loginPage( "/login/form" )
-        .loginProcessingUrl( "/login" )
-        .failureUrl( "/login/form?error" )
-        .usernameParameter( "username" )
-        .passwordParameter( "password" )
-        // without second parameter /default only if user didn't follow to any other protected resource before authentication
-        .defaultSuccessUrl( "/default" )
-        .permitAll()
+        // replaced with the custom login page filter and loginUrlAuthenticationEntryPoint
+        /*        .and().formLogin()
+                .loginPage( "/login/form" )
+                .loginProcessingUrl( "/login" )
+                .failureUrl( "/login/form?error" )
+                .usernameParameter( "username" )
+                .passwordParameter( "password" )
+                // without second parameter /default only if user didn't follow to any other protected resource before authentication
+                .defaultSuccessUrl( "/default" )
+                .permitAll()*/
+        .and().exceptionHandling()
+        .accessDeniedPage( "/errors/403" )
+        .authenticationEntryPoint( loginUrlAuthenticationEntryPoint() )
 
         .and().httpBasic()
         .and()
@@ -115,5 +125,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .and().csrf().disable()
         // for h2
         .headers().frameOptions().disable();
+
+    // add custom AuthenticationFilter
+    http.addFilterAt( domainUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class );
+  }
+
+  @Bean
+  public DomainUsernamePasswordAuthenticationFilter domainUsernamePasswordAuthenticationFilter() throws Exception
+  {
+    DomainUsernamePasswordAuthenticationFilter filter = new DomainUsernamePasswordAuthenticationFilter( authenticationManager() );
+    filter.setFilterProcessesUrl( "/login" );
+    filter.setUsernameParameter( "username" );
+    filter.setPasswordParameter( "password" );
+
+    filter.setAuthenticationSuccessHandler( new SavedRequestAwareAuthenticationSuccessHandler()
+    {{
+      setDefaultTargetUrl( "/default" );
+    }} );
+    filter.setAuthenticationFailureHandler( new SimpleUrlAuthenticationFailureHandler()
+    {{
+      setDefaultFailureUrl( "/login/form?error" );
+    }} );
+    filter.afterPropertiesSet();
+
+    return filter;
+  }
+
+  @Bean
+  public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint()
+  {
+    return new LoginUrlAuthenticationEntryPoint( "/login/form" );
   }
 }

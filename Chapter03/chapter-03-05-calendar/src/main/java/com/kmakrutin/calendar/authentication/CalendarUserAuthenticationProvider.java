@@ -1,8 +1,7 @@
-package com.kmakrutin.calendar.services;
+package com.kmakrutin.calendar.authentication;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,15 +31,16 @@ public class CalendarUserAuthenticationProvider implements AuthenticationProvide
   @Override
   public Authentication authenticate( Authentication authentication ) throws AuthenticationException
   {
-    UsernamePasswordAuthenticationToken token = ( UsernamePasswordAuthenticationToken ) authentication;
-    String email = token.getName();
+    DomainUsernamePasswordAuthenticationToken token = ( DomainUsernamePasswordAuthenticationToken ) authentication;
+    String username = token.getName();
+    String domain = token.getDomain();
 
-    if ( email == null )
+    if ( username == null || domain == null )
     {
       throw new UsernameNotFoundException( "Invalid username/password" );
     }
 
-    CalendarUser user = calendarUserRepository.findByEmail( email );
+    CalendarUser user = calendarUserRepository.findByEmail( username + '@' + domain );
 
     if ( user == null )
     {
@@ -53,12 +53,12 @@ public class CalendarUserAuthenticationProvider implements AuthenticationProvide
       throw new BadCredentialsException( "Invalid username/password" );
     }
 
-    return new UsernamePasswordAuthenticationToken( user, password, CalendarUserAuthorityUtils.createAuthorities( user ) );
+    return new DomainUsernamePasswordAuthenticationToken( user, password, domain, CalendarUserAuthorityUtils.createAuthorities( user ) );
   }
 
   @Override
   public boolean supports( Class<?> authentication )
   {
-    return UsernamePasswordAuthenticationToken.class.equals( authentication );
+    return DomainUsernamePasswordAuthenticationToken.class.equals( authentication );
   }
 }
