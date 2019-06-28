@@ -5,11 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
@@ -26,8 +23,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     return NoOpPasswordEncoder.getInstance();
   }
 
+  // Replaced with the CalendarUserDetailsService
   // Here we exposed InMemoryUserDetailsManager (UserDetailsService) to access the bean
-  @Bean
+/*  @Bean
   public UserDetailsManager userDetailsService()
   {
     InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
@@ -45,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
             .build() );
 
     return userDetailsManager;
-  }
+  }*/
 
   // AuthenticationManagerBuilder object is how Spring Security authenticates the user. In this instance, we utilize an
   // in-memory data store to compare a username and password

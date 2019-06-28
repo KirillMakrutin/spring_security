@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class SpringSecurityUserContext implements UserContext
 {
   private final CalendarService calendarService;
-  private final UserDetailsManager userDetailsManager;
+  private final UserDetailsService userDetailsService;
 
   @Override
   public CalendarUser getCurrentUser()
@@ -36,7 +36,7 @@ public class SpringSecurityUserContext implements UserContext
   @Override
   public void setCurrentUser( CalendarUser user )
   {
-    UserDetails userDetails = userDetailsManager.loadUserByUsername( user.getEmail() );
+    UserDetails userDetails = userDetailsService.loadUserByUsername( user.getEmail() );
     Authentication authentication = new UsernamePasswordAuthenticationToken( userDetails,
         userDetails.getPassword(), userDetails.getAuthorities() );
     SecurityContextHolder.getContext().setAuthentication( authentication );
