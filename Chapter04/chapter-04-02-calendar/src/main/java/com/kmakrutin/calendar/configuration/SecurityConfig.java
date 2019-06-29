@@ -33,6 +33,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   private static final String GROUP_AUTHORITIES_BY_USERNAME_QUERY = "select g.id, g.group_name, ga.authority " +
           " from groups g, group_members gm, group_authorities ga" +
           " where gm.username = ? and g.id = ga.group_id and g.id = gm.group_id";
+  private static final String CUSTOM_USERS_BY_USERNAME_QUERY = "select email, password, true from calendar_users where email = ?";
+  private static final String CUSTOM_AUTHORITIES_BY_USERNAME_QUERY = "select cua.id, cua.authority from calendar_user_authorities cua join calendar_users cu ON cu.id = cua.calendar_user where cu.email = ?";
+
 
   @Autowired
   private DataSource dataSource;
@@ -48,7 +51,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   protected void configure(AuthenticationManagerBuilder auth) throws Exception {
     auth.jdbcAuthentication()
             .dataSource( dataSource )
-            .groupAuthoritiesByUsername( GROUP_AUTHORITIES_BY_USERNAME_QUERY );
+            .usersByUsernameQuery(CUSTOM_USERS_BY_USERNAME_QUERY)
+            .authoritiesByUsernameQuery(CUSTOM_AUTHORITIES_BY_USERNAME_QUERY);
+            // .groupAuthoritiesByUsername( GROUP_AUTHORITIES_BY_USERNAME_QUERY );
   }
 
 /*  @Bean

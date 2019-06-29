@@ -1,7 +1,9 @@
 package com.kmakrutin.calendar.utils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.kmakrutin.calendar.domain.CalendarUserAuthority;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
@@ -27,4 +29,15 @@ public class CalendarUserAuthorityUtils
     }
     return authorities;
   }
+
+  public static List<CalendarUserAuthority> createDbAuthorities( CalendarUser calendarUser )
+  {
+    return createAuthorities(calendarUser).stream().map(grantedAuthority -> {
+      CalendarUserAuthority authority = new CalendarUserAuthority();
+      authority.setAuthority(grantedAuthority.getAuthority());
+      authority.setUser(calendarUser);
+      return authority;
+    }).collect(Collectors.toList());
+  }
+
 }

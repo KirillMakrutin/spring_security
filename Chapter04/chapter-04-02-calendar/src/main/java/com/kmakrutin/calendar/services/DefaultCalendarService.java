@@ -2,6 +2,9 @@ package com.kmakrutin.calendar.services;
 
 import java.util.List;
 
+import com.kmakrutin.calendar.domain.CalendarUserAuthority;
+import com.kmakrutin.calendar.repositories.CalendarUserAuthorityRepository;
+import com.kmakrutin.calendar.utils.CalendarUserAuthorityUtils;
 import org.springframework.stereotype.Service;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
@@ -15,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class DefaultCalendarService implements CalendarService
 {
   private final CalendarUserRepository calendarUserRepository;
+  private final CalendarUserAuthorityRepository calendarUserAuthorityRepository;
   private final EventRepository eventRepository;
 
   @Override
@@ -39,7 +43,11 @@ public class DefaultCalendarService implements CalendarService
   public CalendarUser createUser( CalendarUser user )
   {
     // create a CalendarUser in DB
-    return calendarUserRepository.save( user );
+    CalendarUser savedUser = calendarUserRepository.save(user);
+
+    CalendarUserAuthorityUtils.createDbAuthorities(savedUser).forEach(calendarUserAuthorityRepository::save);
+
+    return savedUser;
   }
 
   @Override

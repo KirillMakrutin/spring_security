@@ -17,11 +17,7 @@ public class DataSourceConfig {
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("/database/h2/calendar-schema.sql")
                 .addScript("/database/h2/calendar-data.sql")
-                .addScript("/database/h2/security-schema.sql")
-                .addScript("/database/h2/security-users.sql")
-                .addScript("/database/h2/security-user-authorities.sql")
-                .addScript("/database/h2/security-groups-schema.sql")
-                .addScript("/database/h2/security-groups-mappings.sql")
+                .addScript("/database/h2/calendar-authorities.sql")
                 .build();
     }
 }
