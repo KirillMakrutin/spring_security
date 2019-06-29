@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  * We must use an AuthenticationProvider object rather than UserDetailsService, because the UserDetails interface has no
  * concept of a domain parameter.
  */
-@Component
+//@Component
 @AllArgsConstructor
 @Slf4j
 public class CalendarUserAuthenticationProvider implements AuthenticationProvider
