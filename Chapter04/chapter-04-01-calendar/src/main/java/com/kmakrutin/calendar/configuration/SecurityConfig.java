@@ -30,6 +30,13 @@ import javax.sql.DataSource;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
+  private static final String GROUP_AUTHORITIES_BY_USERNAME_QUERY = "select g.id, g.group_name, ga.authority " +
+          " from groups g, group_members gm, group_authorities ga" +
+          " where gm.username = ? and g.id = ga.group_id and g.id = gm.group_id";
+
+  @Autowired
+  private DataSource dataSource;
+
   @SuppressWarnings( "deprecation" )
   @Bean
   public static PasswordEncoder passwordEncoder()
@@ -37,12 +44,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     return NoOpPasswordEncoder.getInstance();
   }
 
-  @Bean
+  @Override
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.jdbcAuthentication()
+            .dataSource( dataSource )
+            .groupAuthoritiesByUsername( GROUP_AUTHORITIES_BY_USERNAME_QUERY );
+  }
+
+/*  @Bean
   protected UserDetailsService userDetailsService(DataSource dataSource) {
     JdbcUserDetailsManager manager = new JdbcUserDetailsManager();
     manager.setDataSource(dataSource);
     return manager;
-  }
+  }*/
 
   // HttpSecurity object creates a Servlet Filter, which ensures that the currently logged-in user is associated with
   // the appropriate role.

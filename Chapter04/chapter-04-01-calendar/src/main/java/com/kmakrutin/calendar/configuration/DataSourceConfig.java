@@ -20,6 +20,8 @@ public class DataSourceConfig {
                 .addScript("/database/h2/security-schema.sql")
                 .addScript("/database/h2/security-users.sql")
                 .addScript("/database/h2/security-user-authorities.sql")
+                .addScript("/database/h2/security-groups-schema.sql")
+                .addScript("/database/h2/security-groups-mappings.sql")
                 .build();
     }
 }
