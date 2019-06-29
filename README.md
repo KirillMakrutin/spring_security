@@ -16,3 +16,12 @@ Covers:
 - Learning the simplest method for indicating to Spring Security, that a user is authenticated
 - Creating custom UserDetailsService and AuthenticationProvider implementations that properly decouple the rest of the application from Spring Security
 - Adding domain-based authentication to demonstrate how to authenticate with more than just a username and password
+
+## Chapter 4
+Covers:
+- Using Spring Security's built-in JDBC-based authentication support
+- Utilizing Spring Security's group-based authorization to make administering users easier
+- Learning how to use Spring Security's UserDetailsManager interface
+- Configuring Spring Security to utilize the existing CalendarUser schema to authenticate users
+- Learning how we can secure passwords using Spring Security's new cryptography module
+- Using Spring Security's default JDBC authentication
