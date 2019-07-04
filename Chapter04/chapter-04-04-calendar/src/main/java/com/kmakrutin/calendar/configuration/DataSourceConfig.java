@@ -18,7 +18,7 @@ public class DataSourceConfig {
                 .addScript("/database/h2/calendar-schema.sql")
                 .addScript("/database/h2/calendar-data.sql")
                 .addScript("/database/h2/calendar-authorities.sql")
-                .addScript("/database/h2/calendar-sha256.sql")
+                .addScript("/database/h2/calendar-saltedsha256.sql")
                 .build();
     }
 }
