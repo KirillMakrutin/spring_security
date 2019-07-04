@@ -1,11 +1,11 @@
 package com.kmakrutin.calendar.configuration;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-
-import javax.sql.DataSource;
 
 @Configuration
 public class DataSourceConfig {
@@ -18,6 +18,7 @@ public class DataSourceConfig {
                 .addScript("/database/h2/calendar-schema.sql")
                 .addScript("/database/h2/calendar-data.sql")
                 .addScript("/database/h2/calendar-authorities.sql")
+                .addScript("/database/h2/calendar-sha256.sql")
                 .build();
     }
 }

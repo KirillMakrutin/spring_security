@@ -2,15 +2,15 @@ package com.kmakrutin.calendar.services;
 
 import java.util.List;
 
-import com.kmakrutin.calendar.domain.CalendarUserAuthority;
-import com.kmakrutin.calendar.repositories.CalendarUserAuthorityRepository;
-import com.kmakrutin.calendar.utils.CalendarUserAuthorityUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
 import com.kmakrutin.calendar.domain.Event;
+import com.kmakrutin.calendar.repositories.CalendarUserAuthorityRepository;
 import com.kmakrutin.calendar.repositories.CalendarUserRepository;
 import com.kmakrutin.calendar.repositories.EventRepository;
+import com.kmakrutin.calendar.utils.CalendarUserAuthorityUtils;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,6 +20,7 @@ public class DefaultCalendarService implements CalendarService
   private final CalendarUserRepository calendarUserRepository;
   private final CalendarUserAuthorityRepository calendarUserAuthorityRepository;
   private final EventRepository eventRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   public CalendarUser getUser( int id )
@@ -42,6 +43,7 @@ public class DefaultCalendarService implements CalendarService
   @Override
   public CalendarUser createUser( CalendarUser user )
   {
+    user.setPassword( passwordEncoder.encode( user.getPassword() ) );
     // create a CalendarUser in DB
     CalendarUser savedUser = calendarUserRepository.save(user);
 

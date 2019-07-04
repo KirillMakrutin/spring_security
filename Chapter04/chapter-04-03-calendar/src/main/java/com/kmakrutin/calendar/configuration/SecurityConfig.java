@@ -1,26 +1,22 @@
 package com.kmakrutin.calendar.configuration;
 
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.kmakrutin.calendar.authentication.DomainUsernamePasswordAuthenticationFilter;
-
-import javax.sql.DataSource;
 
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
@@ -44,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   @Bean
   public static PasswordEncoder passwordEncoder()
   {
-    return NoOpPasswordEncoder.getInstance();
+    return new MessageDigestPasswordEncoder("SHA-256");
   }
 
   @Override
@@ -52,7 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
     auth.jdbcAuthentication()
             .dataSource( dataSource )
             .usersByUsernameQuery(CUSTOM_USERS_BY_USERNAME_QUERY)
-            .authoritiesByUsernameQuery(CUSTOM_AUTHORITIES_BY_USERNAME_QUERY);
+            .authoritiesByUsernameQuery(CUSTOM_AUTHORITIES_BY_USERNAME_QUERY)
+            .passwordEncoder( passwordEncoder() );
             // .groupAuthoritiesByUsername( GROUP_AUTHORITIES_BY_USERNAME_QUERY );
   }
 
