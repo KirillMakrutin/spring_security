@@ -25,3 +25,11 @@ Covers:
 - Configuring Spring Security to utilize the existing CalendarUser schema to authenticate users
 - Learning how we can secure passwords using Spring Security's new cryptography module
 - Using Spring Security's default JDBC authentication
+
+## Chapter 5
+Covers:
+- Some of the basic concepts related to the Spring Data project
+- Utilizing Spring Data JPA to authenticate against a relational database
+- Utilizing Spring Data MongoDB to authenticate against a document database
+- How to customize Spring Security for more flexibility when dealing with Spring Data integration
+- Understanding the Spring Data project
