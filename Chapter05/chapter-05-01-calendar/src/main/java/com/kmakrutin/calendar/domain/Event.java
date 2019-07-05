@@ -3,6 +3,7 @@ package com.kmakrutin.calendar.domain;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,11 +36,11 @@ public class Event
   @Temporal( TemporalType.TIMESTAMP )
   private Date when;
 
-  @ManyToOne
-  @JoinColumn( name = "owner" )
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "owner", referencedColumnName = "id" )
   private CalendarUser owner;
 
-  @ManyToOne
-  @JoinColumn( name = "attendee" )
+  @ManyToOne( fetch = FetchType.LAZY )
+  @JoinColumn( name = "attendee", referencedColumnName = "id" )
   private CalendarUser attendee;
 }
