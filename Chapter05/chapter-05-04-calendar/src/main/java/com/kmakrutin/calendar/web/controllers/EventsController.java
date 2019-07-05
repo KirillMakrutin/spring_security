@@ -71,10 +71,7 @@ public class EventsController
     createEventForm.setWhen( new Date() );
 
     // make the attendee not the current user
-    CalendarUser currentUser = userContext.getCurrentUser();
-    int attendeeId = currentUser.getId() == 0 ? 1 : 0;
-    CalendarUser attendee = calendarService.getUser( attendeeId );
-    createEventForm.setAttendeeEmail( attendee.getEmail() );
+    createEventForm.setAttendeeEmail( userContext.getCurrentUser().getEmail() );
 
     return "events/create";
   }
@@ -97,12 +94,16 @@ public class EventsController
     {
       return "events/create";
     }
-    Event event = new Event();
-    event.setAttendee( attendee );
-    event.setDescription( createEventForm.getDescription() );
-    event.setOwner( userContext.getCurrentUser() );
-    event.setSummary( createEventForm.getSummary() );
-    event.setWhen( createEventForm.getWhen() );
+    Event event = new Event(
+        Event.nextId(),
+        createEventForm.getSummary(),
+        createEventForm.getDescription(),
+        createEventForm.getWhen(),
+        userContext.getCurrentUser(),
+        attendee
+    );
+
+    event.setNew( true );
     calendarService.createEvent( event );
 
     redirectAttributes.addFlashAttribute( "message", "Successfully added the new event" );

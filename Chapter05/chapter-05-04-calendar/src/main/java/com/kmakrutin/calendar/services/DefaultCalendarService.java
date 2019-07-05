@@ -27,19 +27,13 @@ public class DefaultCalendarService implements CalendarService
   @Override
   public CalendarUser getUser( int id )
   {
-    return calendarUserRepository.getOne( id );
+    return calendarUserRepository.findById( id ).orElse( null );
   }
 
   @Override
   public CalendarUser findUserByEmail( String email )
   {
     return calendarUserRepository.findByEmail( email );
-  }
-
-  @Override
-  public List<CalendarUser> findUsersByEmail( String partialEmail )
-  {
-    return calendarUserRepository.findUsersByEmail( partialEmail );
   }
 
   @Override
@@ -63,7 +57,7 @@ public class DefaultCalendarService implements CalendarService
   @Override
   public Event getEvent( int eventId )
   {
-    return eventRepository.getOne( eventId );
+    return eventRepository.findById( eventId ).orElse( null );
   }
 
   @Override

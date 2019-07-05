@@ -11,8 +11,6 @@ public interface CalendarService
 
   CalendarUser findUserByEmail( String email );
 
-  List<CalendarUser> findUsersByEmail( String partialEmail );
-
   CalendarUser createUser( CalendarUser user );
 
   Event getEvent( int eventId );

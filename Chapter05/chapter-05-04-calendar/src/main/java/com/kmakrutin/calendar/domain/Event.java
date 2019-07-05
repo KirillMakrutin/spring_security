@@ -1,52 +1,47 @@
 package com.kmakrutin.calendar.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Entity
-@Table( name = "EVENTS" )
+@Document( collection = "events" )
 @Data
-public class Event
+public class Event extends WithIdGenerator implements Persistable<Integer>, Serializable
 {
   @Id
-  @GeneratedValue( strategy = GenerationType.IDENTITY )
   private Integer id;
-
-  @NotEmpty( message = "Summary is required" )
   private String summary;
-
-  @NotEmpty( message = "Description is required" )
   private String description;
-
-  @NotNull( message = "When is required" )
-  @Temporal( TemporalType.TIMESTAMP )
   private Date when;
+  private boolean isNew;
 
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  @ManyToOne( fetch = FetchType.LAZY )
-  @JoinColumn( name = "owner", referencedColumnName = "id" )
+  @DBRef
   private CalendarUser owner;
-
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
-  @ManyToOne( fetch = FetchType.LAZY )
-  @JoinColumn( name = "attendee", referencedColumnName = "id" )
+  @DBRef
   private CalendarUser attendee;
+
+  @PersistenceConstructor
+  public Event( Integer id, String summary, String description, Date when, CalendarUser owner, CalendarUser attendee )
+  {
+    this.id = id;
+    this.summary = summary;
+    this.description = description;
+    this.when = when;
+    this.owner = owner;
+    this.attendee = attendee;
+    this.isNew = true;
+  }
 }

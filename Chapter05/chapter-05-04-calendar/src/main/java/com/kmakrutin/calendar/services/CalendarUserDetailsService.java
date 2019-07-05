@@ -30,7 +30,7 @@ public class CalendarUserDetailsService implements UserDetailsService
     {
       log.error( "User {} not found.", username );
 
-      throw new UsernameNotFoundException("Incorrect username or password.");
+      throw new UsernameNotFoundException( "Incorrect username or password." );
     }
 
     return new CalendarUserDetails( calendarUser );
@@ -40,11 +40,14 @@ public class CalendarUserDetailsService implements UserDetailsService
   {
     private CalendarUserDetails( CalendarUser user )
     {
-      setId( user.getId() );
-      setEmail( user.getEmail() );
-      setFirstName( user.getFirstName() );
-      setLastName( user.getLastName() );
-      setPassword( user.getPassword() );
+      super(
+          user.getId(),
+          user.getFirstName(),
+          user.getLastName(),
+          user.getEmail(),
+          user.getPassword()
+      );
+
       setRoles( user.getRoles() );
     }
 

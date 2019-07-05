@@ -1,31 +1,30 @@
 package com.kmakrutin.calendar.domain;
 
-import java.util.Set;
+import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-@Entity
+@Document( collection = "role" )
 @Data
-@Table( name = "ROLE" )
-public class Role
+public class Role extends WithIdGenerator implements Persistable<Integer>, Serializable
 {
   @Id
-  @GeneratedValue( strategy = GenerationType.AUTO )
   private Integer id;
 
   private String name;
 
-  @ToString.Exclude
-  @EqualsAndHashCode.Exclude
-  @ManyToMany( mappedBy = "roles" )
-  private Set<CalendarUser> users;
+  private boolean isNew;
+
+  @PersistenceConstructor
+  public Role( Integer id, String name )
+  {
+    this.id = id;
+    this.name = name;
+    this.isNew = true;
+  }
 }

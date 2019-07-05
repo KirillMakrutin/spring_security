@@ -43,11 +43,15 @@ public class SignupController
       return "signup/form";
     }
 
-    CalendarUser calendarUser = new CalendarUser();
-    calendarUser.setEmail( email );
-    calendarUser.setFirstName( signupForm.getFirstName() );
-    calendarUser.setLastName( signupForm.getLastName() );
-    calendarUser.setPassword( signupForm.getPassword() );
+    CalendarUser calendarUser = new CalendarUser(
+        CalendarUser.nextId(),
+        signupForm.getFirstName(),
+        signupForm.getLastName(),
+        email,
+        signupForm.getPassword()
+    );
+
+    calendarUser.setNew( true );
 
     userContext.setCurrentUser( calendarService.createUser( calendarUser ) );
 

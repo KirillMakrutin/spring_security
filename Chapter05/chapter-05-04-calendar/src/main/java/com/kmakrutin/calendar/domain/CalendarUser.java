@@ -1,43 +1,51 @@
 package com.kmakrutin.calendar.domain;
 
+import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-@Entity
-@Table( name = "CALENDAR_USERS" )
+@Document( collection = "calendar_users" )
 @Data
-public class CalendarUser
+public class CalendarUser extends WithIdGenerator implements Persistable<Integer>, Serializable
 {
   @Id
-  @GeneratedValue( strategy = GenerationType.IDENTITY )
   private Integer id;
   private String firstName;
   private String lastName;
   private String email;
   private String password;
 
-  @ToString.Exclude
-  @EqualsAndHashCode.Exclude
-  @ManyToMany( fetch = FetchType.EAGER )
-  @JoinTable( name = "user_role",
-      joinColumns = @JoinColumn( name = "user_id" ), inverseJoinColumns = @JoinColumn( name = "role_id" ) )
-  private Set<Role> roles;
+  private boolean isNew;
+
+  @DBRef( lazy = false )
+  private Set<Role> roles = new HashSet<>();
+
+  @PersistenceConstructor
+  public CalendarUser( Integer id, String firstName, String lastName, String email, String password )
+  {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.password = password;
+    this.isNew = true;
+  }
 
   public String getName()
   {
     return firstName + " " + lastName;
+  }
+
+  public void addRole( Role role )
+  {
+    roles.add( role );
   }
 }
