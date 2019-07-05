@@ -1,7 +1,5 @@
 package com.kmakrutin.calendar.configuration;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +7,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -26,15 +25,8 @@ import com.kmakrutin.calendar.authentication.DomainUsernamePasswordAuthenticatio
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
-  private static final String GROUP_AUTHORITIES_BY_USERNAME_QUERY = "select g.id, g.group_name, ga.authority " +
-          " from groups g, group_members gm, group_authorities ga" +
-          " where gm.username = ? and g.id = ga.group_id and g.id = gm.group_id";
-  private static final String CUSTOM_USERS_BY_USERNAME_QUERY = "select email, password, true from calendar_users where email = ?";
-  private static final String CUSTOM_AUTHORITIES_BY_USERNAME_QUERY = "select cua.id, cua.authority from calendar_user_authorities cua join calendar_users cu ON cu.id = cua.calendar_user where cu.email = ?";
-
-
   @Autowired
-  private DataSource dataSource;
+  private UserDetailsService userDetailsService;
 
   @SuppressWarnings( "deprecation" )
   @Bean
@@ -44,21 +36,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
   }
 
   @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.jdbcAuthentication()
-            .dataSource( dataSource )
-            .usersByUsernameQuery(CUSTOM_USERS_BY_USERNAME_QUERY)
-            .authoritiesByUsernameQuery(CUSTOM_AUTHORITIES_BY_USERNAME_QUERY)
-            .passwordEncoder( passwordEncoder() );
-            // .groupAuthoritiesByUsername( GROUP_AUTHORITIES_BY_USERNAME_QUERY );
+  protected void configure( AuthenticationManagerBuilder auth ) throws Exception
+  {
+    auth.userDetailsService( userDetailsService )
+        .passwordEncoder( passwordEncoder() );
   }
-
-/*  @Bean
-  protected UserDetailsService userDetailsService(DataSource dataSource) {
-    JdbcUserDetailsManager manager = new JdbcUserDetailsManager();
-    manager.setDataSource(dataSource);
-    return manager;
-  }*/
 
   // HttpSecurity object creates a Servlet Filter, which ensures that the currently logged-in user is associated with
   // the appropriate role.

@@ -1,16 +1,18 @@
 package com.kmakrutin.calendar.services;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
 import com.kmakrutin.calendar.domain.Event;
-import com.kmakrutin.calendar.repositories.CalendarUserAuthorityRepository;
+import com.kmakrutin.calendar.domain.Role;
 import com.kmakrutin.calendar.repositories.CalendarUserRepository;
 import com.kmakrutin.calendar.repositories.EventRepository;
-import com.kmakrutin.calendar.utils.CalendarUserAuthorityUtils;
+import com.kmakrutin.calendar.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -18,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class DefaultCalendarService implements CalendarService
 {
   private final CalendarUserRepository calendarUserRepository;
-  private final CalendarUserAuthorityRepository calendarUserAuthorityRepository;
   private final EventRepository eventRepository;
+  private final RoleRepository roleRepository;
   private final PasswordEncoder passwordEncoder;
 
   @Override
@@ -44,12 +46,18 @@ public class DefaultCalendarService implements CalendarService
   public CalendarUser createUser( CalendarUser user )
   {
     user.setPassword( passwordEncoder.encode( user.getPassword() ) );
-    // create a CalendarUser in DB
-    CalendarUser savedUser = calendarUserRepository.save(user);
 
-    CalendarUserAuthorityUtils.createDbAuthorities(savedUser).forEach(calendarUserAuthorityRepository::save);
+    Set<Role> roles = new HashSet<>();
+    roles.add( roleRepository.findByName( "ROLE_USER" ) );
 
-    return savedUser;
+    if ( user.getEmail().toLowerCase().startsWith( "admin" ) )
+    {
+      roles.add( roleRepository.findByName( "ROLE_ADMIN" ) );
+    }
+
+    user.setRoles( roles );
+
+    return calendarUserRepository.save( user );
   }
 
   @Override

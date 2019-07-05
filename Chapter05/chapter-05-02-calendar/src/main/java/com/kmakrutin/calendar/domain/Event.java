@@ -16,6 +16,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table( name = "EVENTS" )
@@ -36,10 +38,14 @@ public class Event
   @Temporal( TemporalType.TIMESTAMP )
   private Date when;
 
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   @ManyToOne( fetch = FetchType.LAZY )
   @JoinColumn( name = "owner", referencedColumnName = "id" )
   private CalendarUser owner;
 
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   @ManyToOne( fetch = FetchType.LAZY )
   @JoinColumn( name = "attendee", referencedColumnName = "id" )
   private CalendarUser attendee;

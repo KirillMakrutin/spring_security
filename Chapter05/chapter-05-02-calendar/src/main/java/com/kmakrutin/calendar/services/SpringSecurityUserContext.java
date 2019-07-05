@@ -1,24 +1,20 @@
 package com.kmakrutin.calendar.services;
 
-import static com.kmakrutin.calendar.utils.CalendarUserAuthorityUtils.createAuthorities;
-
-import com.kmakrutin.calendar.repositories.CalendarUserRepository;
-import com.kmakrutin.calendar.utils.CalendarUserAuthorityUtils;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class SpringSecurityUserContext implements UserContext
 {
-  private final CalendarUserRepository userRepository;
+  private final CalendarUserDetailsService calendarUserDetailsService;
 
   @Override
   public CalendarUser getCurrentUser()
@@ -32,15 +28,13 @@ public class SpringSecurityUserContext implements UserContext
       return null;
     }
 
-    User user = (User) authentication.getPrincipal();
-
-    return userRepository.findByEmail(user.getUsername());
+    return ( CalendarUser ) authentication.getPrincipal();
   }
 
   @Override
   public void setCurrentUser( CalendarUser calendarUser )
   {
-    User user = new User( calendarUser.getEmail(), calendarUser.getPassword(), CalendarUserAuthorityUtils.createAuthorities(calendarUser) );
+    UserDetails user = calendarUserDetailsService.loadUserByUsername( calendarUser.getEmail() );
     Authentication authentication = new UsernamePasswordAuthenticationToken( user, user.getPassword(), user.getAuthorities() );
     SecurityContextHolder.getContext().setAuthentication( authentication );
   }

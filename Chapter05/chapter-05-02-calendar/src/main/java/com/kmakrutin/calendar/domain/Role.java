@@ -3,7 +3,6 @@ package com.kmakrutin.calendar.domain;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,6 +10,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -23,6 +24,8 @@ public class Role
 
   private String name;
 
-  @ManyToMany( fetch = FetchType.LAZY, mappedBy = "roles" )
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
+  @ManyToMany( mappedBy = "roles" )
   private Set<CalendarUser> users;
 }

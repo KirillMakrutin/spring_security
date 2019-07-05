@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
 import com.kmakrutin.calendar.domain.CalendarUser;
 import com.kmakrutin.calendar.repositories.CalendarUserRepository;
@@ -14,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-//@Component - replaced with CalendarUserAuthenticationProvider
+@Component
 @RequiredArgsConstructor
 public class CalendarUserDetailsService implements UserDetailsService
 {
@@ -29,7 +30,7 @@ public class CalendarUserDetailsService implements UserDetailsService
     {
       log.error( "User {} not found.", username );
 
-      return null;
+      throw new UsernameNotFoundException("Incorrect username or password.");
     }
 
     return new CalendarUserDetails( calendarUser );
@@ -44,6 +45,7 @@ public class CalendarUserDetailsService implements UserDetailsService
       setFirstName( user.getFirstName() );
       setLastName( user.getLastName() );
       setPassword( user.getPassword() );
+      setRoles( user.getRoles() );
     }
 
     @Override

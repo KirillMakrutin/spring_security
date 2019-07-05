@@ -13,6 +13,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table( name = "CALENDAR_USERS" )
@@ -27,6 +29,8 @@ public class CalendarUser
   private String email;
   private String password;
 
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   @ManyToMany( fetch = FetchType.EAGER )
   @JoinTable( name = "user_role",
       joinColumns = @JoinColumn( name = "user_id" ), inverseJoinColumns = @JoinColumn( name = "role_id" ) )
