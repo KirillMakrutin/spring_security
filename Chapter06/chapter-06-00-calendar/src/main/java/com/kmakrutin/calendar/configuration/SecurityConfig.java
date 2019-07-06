@@ -1,21 +1,18 @@
 package com.kmakrutin.calendar.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kmakrutin.calendar.authentication.DomainUsernamePasswordAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.LdapShaPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.kmakrutin.calendar.authentication.DomainUsernamePasswordAuthenticationFilter;
 
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
@@ -23,85 +20,91 @@ import com.kmakrutin.calendar.authentication.DomainUsernamePasswordAuthenticatio
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter
-{
-  @Autowired
-  private UserDetailsService userDetailsService;
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new LdapShaPasswordEncoder();
+    }
 
-  @SuppressWarnings( "deprecation" )
-  @Bean
-  public static PasswordEncoder passwordEncoder()
-  {
-    return new StandardPasswordEncoder();
-  }
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth
+                .ldapAuthentication()
+                .userSearchBase("")
+                .userSearchFilter("(uid={0})")
 
-  @Override
-  protected void configure( AuthenticationManagerBuilder auth ) throws Exception
-  {
-    auth.userDetailsService( userDetailsService )
-        .passwordEncoder( passwordEncoder() );
-  }
+                .groupSearchBase("ou=Groups")
+                .groupSearchFilter("(uniqueMember={0})")
 
-  // HttpSecurity object creates a Servlet Filter, which ensures that the currently logged-in user is associated with
-  // the appropriate role.
-  @Override
-  protected void configure( HttpSecurity http ) throws Exception
-  {
-    http.authorizeRequests()
-        .antMatchers( "/css/**", "/webjars/**", "/favicon-*.jpg" ).permitAll()
+                //.contextSource(contextSource())
+                .contextSource()
+                .url("ldap://localhost:33389/dc=jbcpcalendar,dc=com")
+                .and()
+                .passwordCompare()
+                .passwordEncoder(passwordEncoder())
+                .passwordAttribute("userPassword");
 
-        .antMatchers( "/" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
-        .antMatchers( "/logout/*" ).access( "hasRole('USER')" )
-        .antMatchers( "/admin/**" ).access( "hasRole('ADMIN' )" )
-        .antMatchers( "/events/" ).access( "hasRole('ADMIN' )" )
+    }
 
-        .antMatchers( "/login/*" ).permitAll()
-        .antMatchers( "/signup/*" ).permitAll()
+/*    @Bean
+    public DefaultSpringSecurityContextSource contextSource() {
+        return new DefaultSpringSecurityContextSource(
+                Arrays.asList("ldap://localhost:33389/"), "dc=jbcpcalendar,dc=com");
+    }*/
 
-        .antMatchers( "/**" ).access( "hasRole('USER')" )
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/css/**", "/webjars/**", "/favicon-*.jpg").permitAll()
 
-        .and().exceptionHandling()
-        .accessDeniedPage( "/errors/403" )
-        .authenticationEntryPoint( loginUrlAuthenticationEntryPoint() )
+                .antMatchers("/").access("hasAnyRole('ANONYMOUS', 'USER')")
+                .antMatchers("/logout/*").access("hasRole('USER')")
+                .antMatchers("/admin/**").access("hasRole('ADMIN' )")
+                .antMatchers("/events/").access("hasRole('ADMIN' )")
 
-        .and().httpBasic()
-        .and()
-        .logout()
-        .logoutUrl( "/logout" )
-        .logoutSuccessUrl( "/login/form?logout" )
-        // CSRF is enabled by default (will discuss later)
-        .and().csrf().disable()
-        // for h2
-        .headers().frameOptions().disable();
+                .antMatchers("/login/*").permitAll()
+                .antMatchers("/signup/*").permitAll()
 
-    // add custom AuthenticationFilter
-    http.addFilterAt( domainUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class );
-  }
+                .antMatchers("/**").access("hasRole('USER')")
 
-  @Bean
-  public DomainUsernamePasswordAuthenticationFilter domainUsernamePasswordAuthenticationFilter() throws Exception
-  {
-    DomainUsernamePasswordAuthenticationFilter filter = new DomainUsernamePasswordAuthenticationFilter( authenticationManager() );
-    filter.setFilterProcessesUrl( "/login" );
-    filter.setUsernameParameter( "username" );
-    filter.setPasswordParameter( "password" );
+                .and().exceptionHandling()
+                .accessDeniedPage("/errors/403")
+                .authenticationEntryPoint(loginUrlAuthenticationEntryPoint())
 
-    filter.setAuthenticationSuccessHandler( new SavedRequestAwareAuthenticationSuccessHandler()
-    {{
-      setDefaultTargetUrl( "/default" );
-    }} );
-    filter.setAuthenticationFailureHandler( new SimpleUrlAuthenticationFailureHandler()
-    {{
-      setDefaultFailureUrl( "/login/form?error" );
-    }} );
-    filter.afterPropertiesSet();
+                .and().httpBasic()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login/form?logout")
+                // CSRF is enabled by default (will discuss later)
+                .and().csrf().disable()
+                // for h2
+                .headers().frameOptions().disable();
 
-    return filter;
-  }
+        // add custom AuthenticationFilter
+        http.addFilterAt(domainUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    }
 
-  @Bean
-  public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint()
-  {
-    return new LoginUrlAuthenticationEntryPoint( "/login/form" );
-  }
+    @Bean
+    public DomainUsernamePasswordAuthenticationFilter domainUsernamePasswordAuthenticationFilter() throws Exception {
+        DomainUsernamePasswordAuthenticationFilter filter = new DomainUsernamePasswordAuthenticationFilter(authenticationManager());
+        filter.setFilterProcessesUrl("/login");
+        filter.setUsernameParameter("username");
+        filter.setPasswordParameter("password");
+
+        filter.setAuthenticationSuccessHandler(new SavedRequestAwareAuthenticationSuccessHandler() {{
+            setDefaultTargetUrl("/default");
+        }});
+        filter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler() {{
+            setDefaultFailureUrl("/login/form?error");
+        }});
+        filter.afterPropertiesSet();
+
+        return filter;
+    }
+
+    @Bean
+    public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint() {
+        return new LoginUrlAuthenticationEntryPoint("/login/form");
+    }
 }
