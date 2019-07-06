@@ -33,3 +33,16 @@ Covers:
 - Utilizing Spring Data MongoDB to authenticate against a document database
 - How to customize Spring Security for more flexibility when dealing with Spring Data integration
 - Understanding the Spring Data project
+
+## Chapter 6
+Covers:
+-Learning some of the basic concepts related to the LDAP protocol and server implementations
+-Configuring a self-contained LDAP server within Spring Security
+-Enabling LDAP authentication and authorization
+-Understanding the model behind LDAP search and user matching
+-Retrieving additional user details from standard LDAP structures
+-Differentiating between LDAP authentication methods and evaluating the pros and cons of each type
+-Explicitly configuring Spring Security LDAP using Spring bean declarations
+-Connecting to external LDAP directories
+-Exploring the built-in support for Microsoft AD
+-We will also explore how to customize Spring Security for more flexibility when dealing with custom AD deployments
