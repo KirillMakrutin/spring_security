@@ -73,5 +73,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .and().csrf().disable()
         // for h2
         .headers().frameOptions().disable();
+
+    http.rememberMe()
+            .rememberMeParameter("remember_me") // default
+            .key("jbcpCalendar");
   }
 }
