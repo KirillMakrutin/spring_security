@@ -46,3 +46,12 @@ Covers:
 -Connecting to external LDAP directories
 -Exploring the built-in support for Microsoft AD
 -We will also explore how to customize Spring Security for more flexibility when dealing with custom AD deployments
+
+## Chapter 7
+Covers:
+-Discussing what remember-me is
+-Learning how to use the token-based remember-me feature
+-Discussing how secure remember-me is, and various ways of making it more secure
+-Enabling the persistent-based remember-me feature, and how to handle additional considerations for using it
+-Presenting the overall remember-me architecture
+-Learning how to create a custom remember-me implementation that is restricted to the user's IP address
