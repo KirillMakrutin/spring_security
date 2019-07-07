@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html
+    xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title id="pageTitle">myCalendar - Please Login</title>
+
+  <!--/*/ <th:block th:include="fragments/headerinc :: head"></th:block> /*/-->
+</head>
+<body>
+
+<!--/*/ <th:block th:include="fragments/header :: header"></th:block> /*/-->
+
+<div class="container">
+
+  <!--/*--><!--@thymesVar id="signupForm" type="com.kmakrutin.calendar.web.dto.SignupForm"--><!--*/-->
+  <form th:action="@{/signup/new}" th:object="${signupForm}" method="POST" cssClass="form-horizontal">
+
+    <div class="alert alert-danger" th:each="err : ${#fields.allErrors()}" th:text="${err}">Error Message</div>
+
+    <div class="form-group">
+      <label for="email">Username</label>
+      <input type="email" th:field="*{email}" id="email" name="email" autofocus="autofocus" required class="form-control"/>
+
+      <label for="password">Password</label>
+      <input type="password" th:field="*{password}" id="password" name="password" required class="form-control"/>
+
+      <label for="firstName">First name</label>
+      <input type="text" th:field="*{firstName}" id="firstName" name="firstName" required class="form-control"/>
+
+      <label for="lastName">Last name</label>
+      <input type="text" th:field="*{lastName}" id="lastName" name="lastName" required class="form-control"/>
+    </div>
+
+    <div class="form-actions">
+      <input id="submit" class="btn btn-primary" name="submit" type="submit" value="Signup"/>
+    </div>
+  </form>
+
+</div>
+
+<!--/*/ <th:block th:include="fragments/footer :: foot"></th:block> /*/-->
+
+</body>
+</html>
