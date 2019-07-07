@@ -17,16 +17,16 @@
 
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active"><a class="nav-link" id="navWelcomeLink" th:href="@{/}">Welcome</a></li>
-          <li class="nav-item"><a class="nav-link" id="navEventsLink" th:href="@{/events/}">All Events</a></li>
-          <li class="nav-item"><a class="nav-link" id="navMyEventsLink" th:href="@{/events/my}">My Events</a></li>
-          <li class="nav-item"><a class="nav-link" id="navCreateEventLink" th:href="@{/events/form}">Create Event</a></li>
-          <li class="nav-item"><a class="nav-link" id="navH2Link" target="_blank" th:href="@{/admin/h2}">H2</a></li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a class="nav-link" id="navEventsLink" th:href="@{/events/}">All Events</a></li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_USER')"><a class="nav-link" id="navMyEventsLink" th:href="@{/events/my}">My Events</a></li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_USER')"><a class="nav-link" id="navCreateEventLink" th:href="@{/events/form}">Create Event</a></li>
+          <li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a class="nav-link" id="navH2Link" target="_blank" th:href="@{/admin/h2}">H2</a></li>
         </ul>
 
         <ul class="navbar-nav" sec:authorize="isAuthenticated()">
           <li class="nav-item">
             <p class="navbar-text">
-              Welcome <span class="text-success" th:text="${#authentication.name}">User</span>
+              Welcome <span class="text-success" th:text="${#authentication.principal.name}">User</span>
             </p>
           </li>
           <li class="nav-item">

@@ -1,4 +1,4 @@
-package com.kmakrutin.calendar.services;
+package com.kmakrutin.calendar.authentication;
 
 import java.util.Collection;
 

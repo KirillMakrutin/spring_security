@@ -10,12 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.kmakrutin.calendar.authentication.DomainUsernamePasswordAuthenticationFilter;
 
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
@@ -60,11 +54,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 
         .antMatchers( "/**" ).access( "hasRole('USER')" )
 
-        .and().exceptionHandling()
-        .accessDeniedPage( "/errors/403" )
-        .authenticationEntryPoint( loginUrlAuthenticationEntryPoint() )
+        .and().exceptionHandling().accessDeniedPage( "/errors/403" )
 
-        .and().httpBasic()
+        .and().formLogin()
+        .loginPage("/login/form")
+        .loginProcessingUrl("/login")
+        .failureUrl("/login/form?error")
+        .usernameParameter("username")
+        .passwordParameter("password")
+        .defaultSuccessUrl("/default", true)
+        .permitAll()
+
         .and()
         .logout()
         .logoutUrl( "/logout" )
@@ -73,35 +73,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .and().csrf().disable()
         // for h2
         .headers().frameOptions().disable();
-
-    // add custom AuthenticationFilter
-    http.addFilterAt( domainUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class );
-  }
-
-  @Bean
-  public DomainUsernamePasswordAuthenticationFilter domainUsernamePasswordAuthenticationFilter() throws Exception
-  {
-    DomainUsernamePasswordAuthenticationFilter filter = new DomainUsernamePasswordAuthenticationFilter( authenticationManager() );
-    filter.setFilterProcessesUrl( "/login" );
-    filter.setUsernameParameter( "username" );
-    filter.setPasswordParameter( "password" );
-
-    filter.setAuthenticationSuccessHandler( new SavedRequestAwareAuthenticationSuccessHandler()
-    {{
-      setDefaultTargetUrl( "/default" );
-    }} );
-    filter.setAuthenticationFailureHandler( new SimpleUrlAuthenticationFailureHandler()
-    {{
-      setDefaultFailureUrl( "/login/form?error" );
-    }} );
-    filter.afterPropertiesSet();
-
-    return filter;
-  }
-
-  @Bean
-  public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint()
-  {
-    return new LoginUrlAuthenticationEntryPoint( "/login/form" );
   }
 }
