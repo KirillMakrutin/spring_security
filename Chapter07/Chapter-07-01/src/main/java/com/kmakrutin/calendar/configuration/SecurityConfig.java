@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 
         .antMatchers( "/" ).access( "hasAnyRole('ANONYMOUS', 'USER')" )
         .antMatchers( "/logout/*" ).access( "hasRole('USER')" )
-        .antMatchers( "/admin/**" ).access( "hasRole('ADMIN' )" )
+        .antMatchers( "/admin/**" ).access( "hasRole('ADMIN' ) and isFullyAuthenticated()" )
         .antMatchers( "/events/" ).access( "hasRole('ADMIN' )" )
 
         .antMatchers( "/login/*" ).permitAll()
@@ -76,6 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 
     http.rememberMe()
             .rememberMeParameter("remember_me") // default
-            .key("jbcpCalendar");
+            .key("jbcpCalendar_key_b2fcf43d-a449-46bc-a3ad-5ed6c132825c");
   }
 }
