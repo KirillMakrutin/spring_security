@@ -26,7 +26,9 @@
         <ul class="navbar-nav" sec:authorize="isAuthenticated()">
           <li class="nav-item">
             <p class="navbar-text">
-              Welcome <span class="text-success" th:text="${#authentication.name}">User</span>
+              Welcome <span class="text-success">
+              <a th:href="@{/accounts/my}" th:text="${#authentication.name}">username</a>
+            </span>
             </p>
           </li>
           <li class="nav-item">
