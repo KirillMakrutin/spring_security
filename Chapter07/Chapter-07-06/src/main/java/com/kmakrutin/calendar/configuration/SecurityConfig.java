@@ -11,7 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
-import com.kmakrutin.calendar.repositories.PersistentTokenRepository;
+import com.kmakrutin.calendar.repositories.PersistentTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
