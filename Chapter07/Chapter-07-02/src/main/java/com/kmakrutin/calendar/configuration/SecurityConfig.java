@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
+import com.kmakrutin.calendar.repositories.PersistentTokenRepository;
+
 // demonstrates user login requirements for every page in our application,
 // provides a login page, authenticates the user, and requires the logged-in user to be
 // associated with a role called USER for every URL element
@@ -21,6 +23,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
   @Autowired
   private UserDetailsService userDetailsService;
+
+  @Autowired
+  private PersistentTokenRepository persistentTokenRepository;
 
   @SuppressWarnings( "deprecation" )
   @Bean
@@ -75,6 +80,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         .headers().frameOptions().disable();
 
     http.rememberMe()
+        .tokenRepository( persistentTokenRepository )
             .rememberMeParameter("remember_me") // default
             .key("jbcpCalendar_key_b2fcf43d-a449-46bc-a3ad-5ed6c132825c");
   }
