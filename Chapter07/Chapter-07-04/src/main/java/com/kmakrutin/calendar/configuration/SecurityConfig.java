@@ -10,7 +10,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
+import org.springframework.security.web.authentication.RememberMeServices;
 
+import com.kmakrutin.calendar.authentication.CalendarPersistentTokenBasedRememberMeServices;
 import com.kmakrutin.calendar.repositories.PersistentTokenRepository;
 
 // demonstrates user login requirements for every page in our application,
@@ -79,9 +81,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
         // for h2
         .headers().frameOptions().disable();
 
-    http.rememberMe()
-        .tokenRepository( persistentTokenRepository )
-            .rememberMeParameter("remember_me") // default
-            .key("jbcpCalendar_key_b2fcf43d-a449-46bc-a3ad-5ed6c132825c");
+    http.rememberMe().rememberMeServices( rememberMeServices() );
+  }
+
+  @Bean
+  public RememberMeServices rememberMeServices()
+  {
+    // Custom implementation to gain more control
+    CalendarPersistentTokenBasedRememberMeServices calendarPersistentTokenBasedRememberMeServices = new CalendarPersistentTokenBasedRememberMeServices( "jbcpCalendar_key_b2fcf43d-a449-46bc-a3ad-5ed6c132825c",
+        userDetailsService, persistentTokenRepository );
+    calendarPersistentTokenBasedRememberMeServices.setParameter( "remember_me" );
+    calendarPersistentTokenBasedRememberMeServices.setCookieName( "jbcpCalendar_remember_me" );
+    return calendarPersistentTokenBasedRememberMeServices;
   }
 }
