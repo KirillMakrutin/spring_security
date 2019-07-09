@@ -36,30 +36,30 @@ Covers:
 
 ## Chapter 6 - LDAP Directory Services
 Covers:
--Learning some of the basic concepts related to the LDAP protocol and server implementations
--Configuring a self-contained LDAP server within Spring Security
--Enabling LDAP authentication and authorization
--Understanding the model behind LDAP search and user matching
--Retrieving additional user details from standard LDAP structures
--Differentiating between LDAP authentication methods and evaluating the pros and cons of each type
--Explicitly configuring Spring Security LDAP using Spring bean declarations
--Connecting to external LDAP directories
--Exploring the built-in support for Microsoft AD
--We will also explore how to customize Spring Security for more flexibility when dealing with custom AD deployments
+- Learning some of the basic concepts related to the LDAP protocol and server implementations
+- Configuring a self-contained LDAP server within Spring Security
+- Enabling LDAP authentication and authorization
+- Understanding the model behind LDAP search and user matching
+- Retrieving additional user details from standard LDAP structures
+- Differentiating between LDAP authentication methods and evaluating the pros and cons of each type
+- Explicitly configuring Spring Security LDAP using Spring bean declarations
+- Connecting to external LDAP directories
+- Exploring the built-in support for Microsoft AD
+- We will also explore how to customize Spring Security for more flexibility when dealing with custom AD deployments
 
 ## Chapter 7 - Remember-Me Services
 Covers:
--Discussing what remember-me is
--Learning how to use the token-based remember-me feature
--Discussing how secure remember-me is, and various ways of making it more secure
--Enabling the persistent-based remember-me feature, and how to handle additional considerations for using it
--Presenting the overall remember-me architecture
--Learning how to create a custom remember-me implementation that is restricted to the user's IP address
+- Discussing what remember-me is
+- Learning how to use the token-based remember-me feature
+- Discussing how secure remember-me is, and various ways of making it more secure
+- Enabling the persistent-based remember-me feature, and how to handle additional considerations for using it
+- Presenting the overall remember-me architecture
+- Learning how to create a custom remember-me implementation that is restricted to the user's IP address
 
 ## Chapter 8 - Client Certificate Authentication with TLS
 Covers:
--Learning how client certificate authentication is negotiated between the user's browser and a compliant server
--Configuring Spring Security to authenticate users with client certificates
--Understanding the architecture of client certificate authentication in Spring Security
--Exploring advanced configuration options related to client certificate authentication
--Reviewing pros, cons, and common troubleshooting steps when dealing with client certificate authentication
+- Learning how client certificate authentication is negotiated between the user's browser and a compliant server
+- Configuring Spring Security to authenticate users with client certificates
+- Understanding the architecture of client certificate authentication in Spring Security
+- Exploring advanced configuration options related to client certificate authentication
+- Reviewing pros, cons, and common troubleshooting steps when dealing with client certificate authentication
