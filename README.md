@@ -63,3 +63,13 @@ Covers:
 - Understanding the architecture of client certificate authentication in Spring Security
 - Exploring advanced configuration options related to client certificate authentication
 - Reviewing pros, cons, and common troubleshooting steps when dealing with client certificate authentication
+
+## Chapter 9 - Opening up to OAuth 2
+Covers:
+- Learning to set up your own OAuth 2 application in less than 5 minutes
+- Configuring the JBCP calendar application with a very rapid implementation of OAuth 2
+- Learning the conceptual architecture of OAuth 2 and how it provides your site with trustworthy user access
+- Implementing OAuth 2-based user registration
+- Experimenting with OAuth 2 attribute exchange for user profile functionality
+- Demonstrating how we can trigger automatic authentication to the previous OAuth 2 provider
+- Examining the security offered by OAuth 2-based login
