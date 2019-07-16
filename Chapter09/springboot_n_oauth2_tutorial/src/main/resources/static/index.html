@@ -51,7 +51,7 @@
   endpoint. It turns out that Github and Facebook both have a "name" field in the same place in their user info, so there
   isn’t any change in practice to our simple endpoint.*/
   $.get( "/user", function ( data ) {
-    $( "#user" ).html( data.userAuthentication.details.name );
+    $( "#user" ).html( data.principal.name );
     $( ".unauthenticated" ).hide();
     $( ".authenticated" ).show();
   } );

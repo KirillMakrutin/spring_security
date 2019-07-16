@@ -24,12 +24,18 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
 
+import com.kmakrutin.springboot_n_oauth2_tutorial.authentication.OAuth2ClientAuthenticationProcessingAndSaveFilter;
+import com.kmakrutin.springboot_n_oauth2_tutorial.service.OAuthUserService;
+
 @EnableOAuth2Client
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
   @Autowired
   private OAuth2ClientContext oauth2ClientContext;
+
+  @Autowired
+  private OAuthUserService userService;
 
   @Override
   protected void configure( HttpSecurity http ) throws Exception
@@ -38,17 +44,29 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
         .antMatcher( "/**" )
         .authorizeRequests()
 
-        .antMatchers( "/", "/js/**", "/login**", "/webjars/**", "/error**" )
+        .antMatchers( "/", "/js/**", "/login**", "/webjars/**", "/error**", "/h2-console/**" )
         .permitAll()
 
         .anyRequest()
         .authenticated()
 
-        .and().logout().logoutSuccessUrl( "/" ).permitAll()
+        .and()
+        .logout()
+        .logoutSuccessUrl( "/" )
+        .permitAll()
 
-        .and().csrf().csrfTokenRepository( CookieCsrfTokenRepository.withHttpOnlyFalse() )
+        .and()
+        .csrf()
+        .csrfTokenRepository( CookieCsrfTokenRepository.withHttpOnlyFalse() )
+        .ignoringAntMatchers( "/h2-console/**" )
 
-        .and().addFilterAt( ssoFilter(), BasicAuthenticationFilter.class );
+        .and()
+        .addFilterAt( ssoFilter(), BasicAuthenticationFilter.class )
+
+        // for h2
+        .headers()
+        .frameOptions()
+        .disable();
 
   }
 
@@ -64,7 +82,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
     CompositeFilter filter = new CompositeFilter();
     List<Filter> filters = new ArrayList<>( 2 );
 
-    OAuth2ClientAuthenticationProcessingFilter facebookFilter = new OAuth2ClientAuthenticationProcessingFilter( "/login/facebook" );
+    OAuth2ClientAuthenticationProcessingFilter facebookFilter = new OAuth2ClientAuthenticationProcessingAndSaveFilter( userService, "/login/facebook" );
     OAuth2RestTemplate facebookTemplate = new OAuth2RestTemplate( facebook(), oauth2ClientContext );
     facebookFilter.setRestTemplate( facebookTemplate );
     UserInfoTokenServices tokenServices = new UserInfoTokenServices( facebookResource().getUserInfoUri(), facebook().getClientId() );
@@ -72,7 +90,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
     facebookFilter.setTokenServices( tokenServices );
     filters.add( facebookFilter );
 
-    OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingFilter( "/login/github" );
+    OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingAndSaveFilter( userService, "/login/github" );
     OAuth2RestTemplate githubTemplate = new OAuth2RestTemplate( github(), oauth2ClientContext );
     githubFilter.setRestTemplate( githubTemplate );
     tokenServices = new UserInfoTokenServices( githubResource().getUserInfoUri(), github().getClientId() );
