@@ -20,6 +20,17 @@ github:
   resource:
     userInfoUri: https://api.github.com/user
 
+# This client is the equivalent of the facebook.client* and github.client* that we need for the external authentication.
+# With the external providers we had to register and get a client ID and a secret to use in our app.
+# In this case we are providing our own equivalent of the same feature, so we need (at least one) client for it to work.
+security:
+  oauth2:
+    client:
+      client-id: acme
+      client-secret: acmesecret
+      scope: read,write
+      auto-approve-scopes: '.*'
+
 server:
   port: 8443
   ssl:

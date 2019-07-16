@@ -6,10 +6,8 @@ import java.util.List;
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoTokenServices;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,17 +15,19 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
-import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
-import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.filter.CompositeFilter;
 
 import com.kmakrutin.springboot_n_oauth2_tutorial.authentication.OAuth2ClientAuthenticationProcessingAndSaveFilter;
+import com.kmakrutin.springboot_n_oauth2_tutorial.authentication.OAuth2ClientResources;
 import com.kmakrutin.springboot_n_oauth2_tutorial.service.OAuthUserService;
 
 @EnableOAuth2Client
+@EnableAuthorizationServer
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
@@ -49,6 +49,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 
         .anyRequest()
         .authenticated()
+
+        .and().exceptionHandling()
+        .authenticationEntryPoint( new LoginUrlAuthenticationEntryPoint( "/" ) )
 
         .and()
         .logout()
@@ -80,78 +83,39 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
   private Filter ssoFilter()
   {
     CompositeFilter filter = new CompositeFilter();
-    List<Filter> filters = new ArrayList<>( 2 );
-
-    OAuth2ClientAuthenticationProcessingFilter facebookFilter = new OAuth2ClientAuthenticationProcessingAndSaveFilter( userService, "/login/facebook" );
-    OAuth2RestTemplate facebookTemplate = new OAuth2RestTemplate( facebook(), oauth2ClientContext );
-    facebookFilter.setRestTemplate( facebookTemplate );
-    UserInfoTokenServices tokenServices = new UserInfoTokenServices( facebookResource().getUserInfoUri(), facebook().getClientId() );
-    tokenServices.setRestTemplate( facebookTemplate );
-    facebookFilter.setTokenServices( tokenServices );
-    filters.add( facebookFilter );
-
-    OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingAndSaveFilter( userService, "/login/github" );
-    OAuth2RestTemplate githubTemplate = new OAuth2RestTemplate( github(), oauth2ClientContext );
-    githubFilter.setRestTemplate( githubTemplate );
-    tokenServices = new UserInfoTokenServices( githubResource().getUserInfoUri(), github().getClientId() );
-    tokenServices.setRestTemplate( githubTemplate );
-    githubFilter.setTokenServices( tokenServices );
-    filters.add( githubFilter );
-
+    List<Filter> filters = new ArrayList<>();
+    filters.add( ssoFilter( facebook(), "/login/facebook" ) );
+    filters.add( ssoFilter( github(), "/login/github" ) );
     filter.setFilters( filters );
 
     return filter;
   }
 
-  @Bean
-  @ConfigurationProperties( "github.client" )
-  public AuthorizationCodeResourceDetails github()
+  private Filter ssoFilter( OAuth2ClientResources client, String path )
   {
-    return new AuthorizationCodeResourceDetails();
+    OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingAndSaveFilter( userService, path );
+    OAuth2RestTemplate template = new OAuth2RestTemplate( client.getClient(), oauth2ClientContext );
+    filter.setRestTemplate( template );
+    UserInfoTokenServices tokenServices = new UserInfoTokenServices(
+        client.getResource().getUserInfoUri(),
+        client.getClient().getClientId() );
+    tokenServices.setRestTemplate( template );
+    filter.setTokenServices( tokenServices );
+
+    return filter;
   }
 
   @Bean
-  @ConfigurationProperties( "github.resource" )
-  public ResourceServerProperties githubResource()
+  @ConfigurationProperties( "github" )
+  public OAuth2ClientResources github()
   {
-    return new ResourceServerProperties();
+    return new OAuth2ClientResources();
   }
 
-  /**
-   * the filter also needs to know about the client registration with Facebook:
-   */
   @Bean
-  @ConfigurationProperties( "facebook.client" )
-  public AuthorizationCodeResourceDetails facebook()
+  @ConfigurationProperties( "facebook" )
+  public OAuth2ClientResources facebook()
   {
-    return new AuthorizationCodeResourceDetails();
-  }
-
-  /**
-   * and to complete the authentication it needs to know where the user info endpoint is in Facebook
-   */
-  @Bean
-  @ConfigurationProperties( "facebook.resource" )
-  public ResourceServerProperties facebookResource()
-  {
-    return new ResourceServerProperties();
-  }
-
-  /**
-   * The last change we need to make is to explicitly support the redirects from our app to Facebook.
-   * This is handled in Spring OAuth2 with a servlet Filter, and the filter is already available in the application context
-   * because we used @EnableOAuth2Client. All that is needed is to wire the filter up so that it gets called in the right
-   * order in our Spring Boot application. To do that we need a FilterRegistrationBean.
-   *
-   * We autowire the already available filter, and register it with a sufficiently low order that it comes before the main
-   * Spring Security filter. In this way we can use it to handle redirects signaled by exceptions in authentication requests
-   */
-  @Bean
-  public FilterRegistrationBean<OAuth2ClientContextFilter> oauth2ClientFilterRegistration( OAuth2ClientContextFilter filter )
-  {
-    FilterRegistrationBean<OAuth2ClientContextFilter> registration = new FilterRegistrationBean<>();
-    registration.setFilter( filter );
-    registration.setOrder( -100 );
-    return registration;
+    return new OAuth2ClientResources();
   }
 }
