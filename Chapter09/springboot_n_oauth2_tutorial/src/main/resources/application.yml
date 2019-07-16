@@ -10,6 +10,16 @@ facebook:
   resource:
     userInfoUri: https://graph.facebook.com/me
 
+github:
+  client:
+    clientId: clientId
+    clientSecret: clientSecret
+    accessTokenUri: https://github.com/login/oauth/access_token
+    userAuthorizationUri: https://github.com/login/oauth/authorize
+    clientAuthenticationScheme: form
+  resource:
+    userInfoUri: https://api.github.com/user
+
 server:
   port: 8443
   ssl:

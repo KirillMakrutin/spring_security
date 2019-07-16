@@ -1,5 +1,8 @@
 package com.kmakrutin.springboot_n_oauth2_tutorial.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.Filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.filter.CompositeFilter;
 
 @EnableOAuth2Client
 @Configuration
@@ -50,19 +54,49 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 
   /**
    * this filter is created in new method where we use the OAuth2ClientContext
+   *
+   * The main change on the server is to add an additional security filter to handle the "/login/github" requests coming
+   * from our new link. We already have a custom authentication filter for Facebook created in our ssoFilter() method,
+   * so all we need to do is replace that with a composite that can handle more than one authentication path
    */
   private Filter ssoFilter()
   {
-    OAuth2ClientAuthenticationProcessingFilter facebookFilter = new OAuth2ClientAuthenticationProcessingFilter( "/login/facebook" );
+    CompositeFilter filter = new CompositeFilter();
+    List<Filter> filters = new ArrayList<>( 2 );
 
+    OAuth2ClientAuthenticationProcessingFilter facebookFilter = new OAuth2ClientAuthenticationProcessingFilter( "/login/facebook" );
     OAuth2RestTemplate facebookTemplate = new OAuth2RestTemplate( facebook(), oauth2ClientContext );
     facebookFilter.setRestTemplate( facebookTemplate );
-
     UserInfoTokenServices tokenServices = new UserInfoTokenServices( facebookResource().getUserInfoUri(), facebook().getClientId() );
     tokenServices.setRestTemplate( facebookTemplate );
     facebookFilter.setTokenServices( tokenServices );
+    filters.add( facebookFilter );
 
-    return facebookFilter;
+    OAuth2ClientAuthenticationProcessingFilter githubFilter = new OAuth2ClientAuthenticationProcessingFilter( "/login/github" );
+    OAuth2RestTemplate githubTemplate = new OAuth2RestTemplate( github(), oauth2ClientContext );
+    githubFilter.setRestTemplate( githubTemplate );
+    tokenServices = new UserInfoTokenServices( githubResource().getUserInfoUri(), github().getClientId() );
+    tokenServices.setRestTemplate( githubTemplate );
+    githubFilter.setTokenServices( tokenServices );
+    filters.add( githubFilter );
+
+    filter.setFilters( filters );
+
+    return filter;
+  }
+
+  @Bean
+  @ConfigurationProperties( "github.client" )
+  public AuthorizationCodeResourceDetails github()
+  {
+    return new AuthorizationCodeResourceDetails();
+  }
+
+  @Bean
+  @ConfigurationProperties( "github.resource" )
+  public ResourceServerProperties githubResource()
+  {
+    return new ResourceServerProperties();
   }
 
   /**
