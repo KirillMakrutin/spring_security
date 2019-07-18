@@ -2,13 +2,18 @@ server:
   port: 9999
   servlet:
     context-path: /client
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:sso_client.p12
+    key-store-password: changeit
+    key-alias: sso_client
 security:
   oauth2:
     client:
       client-id: acme
       client-secret: acmesecret
-      access-token-uri: http://localhost:8080/oauth/token
-      user-authorization-uri: http://localhost:8080/oauth/authorize
+      access-token-uri: https://localhost:8443/sso/oauth/token
+      user-authorization-uri: https://localhost:8443/sso/oauth/authorize
     resource:
-      user-info-uri: http://localhost:8080/me
-## doesn't work with ssl on the server side only
+      user-info-uri: https://localhost:8443/sso/me
+# To make it work with SSL you should import java cacerts in cer format

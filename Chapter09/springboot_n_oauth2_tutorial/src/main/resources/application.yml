@@ -30,12 +30,14 @@ security:
       client-secret: acmesecret
       scope: read,write
       auto-approve-scopes: '.*'
-      registered-redirect-uri: http://localhost:9999/client/login
+      registered-redirect-uri: https://localhost:9999/client/login
 
 server:
   port: 8443
+  servlet:
+    context-path: /sso
   ssl:
     key-store-type: PKCS12
-    key-store: classpath:jbcp_clientauth.p12
+    key-store: classpath:sso.p12
     key-store-password: changeit
-    key-alias: jbcpclient
+    key-alias: sso
