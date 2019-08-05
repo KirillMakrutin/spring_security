@@ -73,3 +73,13 @@ Covers:
 - Experimenting with OAuth 2 attribute exchange for user profile functionality
 - Demonstrating how we can trigger automatic authentication to the previous OAuth 2 provider
 - Examining the security offered by OAuth 2-based login
+
+## Chapter 10 - Single Sign-On with the Central Authentication Service
+Covers:
+- Learning about CAS, its architecture, and how it benefits system administrators and organizations of any size
+- Understanding how Spring Security can be reconfigured to handle the interception of authentication requests and redirecting it to CAS
+- Configuring the JBCP calendar application to utilize CAS single sign-on
+- Gaining an understanding of how a single logout can be performed, and configuring our application to support it
+- Discussing how to use CAS proxy ticket authentication for services, and configuring our application to utilize proxy ticket authentication
+- Discussing how to customize the out-of-the-box JA-SIG CAS server using the recommended war overlay approach
+- Integrating the CAS server with LDAP, and passing data from LDAP to Spring Security via CAS
